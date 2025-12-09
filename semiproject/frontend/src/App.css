@@ -1,0 +1,8 @@
+/* 화면 전체를 쓰는 루트 컨테이너 */
+.app-root {
+  width: 100%;
+  height: 100%;          /* index.css에서 html/body/#root 100%로 맞춰둠 */
+  display: flex;
+  justify-content: center;  /* 가로 중앙 */
+  align-items: center;      /* 세로 중앙 */
+}
