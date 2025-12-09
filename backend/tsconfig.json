@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    // Node + Express 백엔드 기본 설정
+    "target": "ES2019",
+    "module": "commonjs",
+
+    // 소스 / 빌드 결과 위치
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    // 타입스크립트 엄격 모드
+    "strict": true,
+
+    // import express from 'express' 이런 문법 허용
+    "esModuleInterop": true,
+
+    // 기타 권장 옵션
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"],
+    "exclude": [
+    "node_modules",         
+    "**/node_modules/*", 
+    "dist"
+  ]
+}
