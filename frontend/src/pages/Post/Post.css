@@ -1,0 +1,110 @@
+.post-container {
+  display: flex;
+  justify-content: center;
+  padding-top: 40px;
+}
+
+.post-card {
+  width: 900px;
+  background: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.post-header {
+  padding: 15px;
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 1px solid #dbdbdb;
+  font-size: 18px;
+}
+
+.post-content-area {
+  display: flex;
+  height: 500px;
+}
+
+.post-preview-box {
+  flex: 1;
+  border-right: 1px solid #dbdbdb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.file-select {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 90%;
+  height: 90%;
+  border: 2px dashed #aaa;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.file-select input {
+  display: none;
+}
+
+.preview-images img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.post-write-box {
+  width: 40%;
+  padding: 15px;
+  display: flex;             
+  flex-direction: column;     
+}
+
+.post-write-box textarea {
+  width: 100%;
+  flex: 1;          
+  border: none;
+  outline: none;
+  resize: none;
+  font-size: 16px;
+}
+
+
+
+.post-upload-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background: #0095f6;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.post-upload-btn:hover {
+  background: #007ad9;
+}
+
+.emotion-select {
+  margin-bottom: 12px;
+}
+
+.emotion-select label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.emotion-select input[type="range"] {
+  width: 100%;
+}
+
+.emotion-select span {
+  font-weight: bold;
+  margin-left: 6px;
+}
+

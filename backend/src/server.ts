@@ -1,5 +1,16 @@
+import oracledb from "oracledb";
+
+// Thick Mode 활성화
+oracledb.initOracleClient({
+  libDir: "C:\\Users\\An\\Desktop\\instantclient-basic-windows.x64-21.19.0.0.0dbru\\instantclient_21_19"
+});
+
+
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import mediaRouter from "./routes/posts/media.routes";
+
+
 
 
 // users
@@ -10,6 +21,10 @@ import userRoutes from "./routes/users/user.routes";
 
 // main
 import mainRouter from "./routes/main/main.routes";
+
+// posts
+import postsRouter from "./routes/posts/posts.routes";
+
 //DB 연결
 import "dotenv/config";
 import { initOraclePool } from "./config/oracle";
@@ -48,7 +63,10 @@ app.use("/api/users", userRoutes);
 // 메인 페이지
 app.use("/api/main", mainRouter);
 
-
+// 📌 업로드(미디어) 라우트 추가
+app.use("/uploads", express.static("uploads"));  
+app.use("/api/posts", postsRouter);
+app.use("/api/media", mediaRouter);
 
 // 서버 시작 (Oracle 풀 준비 후)
 (async () => {

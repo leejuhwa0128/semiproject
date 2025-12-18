@@ -7,6 +7,10 @@ import MainPage from "./pages/main";
 import FindIdForm from "./pages/find/FindIdForm";
 import FindPasswordForm from "./pages/find/FindPasswordForm";
 import LogoutPage from "./pages/logout/LogoutPage";
+import Post from "./pages/Post/Post";
+
+
+
 
 import Sidebar from "./pages/Sidebar/Sidebar";
 import ProfilePage from "./pages/profile/ProfilePage"; // ⭐ 이 줄 추가
@@ -62,6 +66,23 @@ function App() {
             </ProtectedRoute>
           }
         />
+ {/* ⭐ 게시글 작성 페이지 */} 
+<Route
+  path="/Post"
+  element={
+    <ProtectedRoute>
+      <div className="main-layout">
+        <Sidebar />
+        <div className="main-content">
+          <Post />
+        </div>
+      </div>
+    </ProtectedRoute>
+  }
+/>
+
+
+
       </Routes>
     </div>
   );

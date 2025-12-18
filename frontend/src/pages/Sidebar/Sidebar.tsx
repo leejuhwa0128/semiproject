@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "./Sidebar.css";
 
+
 const Sidebar: React.FC = () => {
     return (
         <div className="sidebar">
@@ -19,7 +20,7 @@ const Sidebar: React.FC = () => {
                 </li>
 
                 <li>
-                    <Link to="/create">➕ 만들기</Link>
+                    <Link to="/Post">➕ 만들기</Link>
                 </li>
 
                 <li>
