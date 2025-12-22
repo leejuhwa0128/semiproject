@@ -1,5 +1,5 @@
-// src/pages/profile/ProfilePage.tsx
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 import "./ProfilePage.css";
 
@@ -20,6 +20,7 @@ const ProfilePage: React.FC = () => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -101,7 +102,12 @@ const ProfilePage: React.FC = () => {
 
           {/* 버튼들 */}
           <div className="profile-buttons">
-            <button className="profile-btn">프로필 편집</button>
+            <button
+              className="profile-btn"
+              onClick={() => navigate("/profile/edit")}
+            >
+              프로필 편집
+            </button>
             <button className="profile-btn">감정 변경 내역</button>
           </div>
         </div>
