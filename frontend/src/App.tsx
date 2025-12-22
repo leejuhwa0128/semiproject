@@ -8,13 +8,11 @@ import FindIdForm from "./pages/find/FindIdForm";
 import FindPasswordForm from "./pages/find/FindPasswordForm";
 import LogoutPage from "./pages/logout/LogoutPage";
 import Post from "./pages/Post/Post";
-
-
+import ProfileEditPage from "./pages/profile/ProfileEditPage";
 
 
 import Sidebar from "./pages/Sidebar/Sidebar";
-import ProfilePage from "./pages/profile/ProfilePage"; // ⭐ 이 줄 추가
-
+import ProfilePage from "./pages/profile/ProfilePage";
 import "./App.css";
 
 function App() {
@@ -66,20 +64,35 @@ function App() {
             </ProtectedRoute>
           }
         />
- {/* ⭐ 게시글 작성 페이지 */} 
-<Route
-  path="/Post"
-  element={
-    <ProtectedRoute>
-      <div className="main-layout">
-        <Sidebar />
-        <div className="main-content">
-          <Post />
-        </div>
-      </div>
-    </ProtectedRoute>
-  }
-/>
+        {/* 프로필 편집 페이지 */}
+        <Route
+          path="/profile/edit"
+          element={
+            <ProtectedRoute>
+              <div className="main-layout">
+                <Sidebar />
+                <div className="main-content">
+                  <ProfileEditPage />
+                </div>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 게시글 작성 페이지 */}
+        <Route
+          path="/Post"
+          element={
+            <ProtectedRoute>
+              <div className="main-layout">
+                <Sidebar />
+                <div className="main-content">
+                  <Post />
+                </div>
+              </div>
+            </ProtectedRoute>
+          }
+        />
 
 
 

@@ -254,3 +254,85 @@ export async function findUserById(userId: number): Promise<any> {
   }
 }
 
+export async function isNicknameExists(nickname: string): Promise<boolean> {
+  let conn;
+  try {
+    conn = await getOracleConnection();
+
+    const sql = `
+      SELECT COUNT(*) AS "cnt"
+      FROM users
+      WHERE nickname = :nickname
+    `;
+
+    const result = await conn.execute(sql, { nickname }, { outFormat: 4002 });
+    const cnt = (result.rows?.[0] as any)?.cnt ?? 0;
+
+    return Number(cnt) > 0; // true = 이미 존재
+  } finally {
+    if (conn) await conn.close();
+  }
+}
+
+/**
+ * 🔹 프로필 수정
+ * - nickname / email / intro 중 전달된 값만 업데이트
+ * - undefined → 기존 값 유지
+ * - intro는 null 허용
+ */
+export async function updateUserProfile(
+  userId: number,
+  data: {
+    nickname?: string;
+    email?: string;
+    intro?: string | null;
+  }
+): Promise<void> {
+  let conn;
+
+  try {
+    conn = await getOracleConnection();
+
+    const sql = `
+      UPDATE users
+      SET
+        nickname = COALESCE(:nickname, nickname),
+        email    = COALESCE(:email, email),
+        intro    = COALESCE(:intro, intro)
+      WHERE user_id = :userId
+    `;
+
+    await conn.execute(
+      sql,
+      {
+        userId,
+        nickname: data.nickname ?? null,
+        email: data.email ?? null,
+        intro: data.intro ?? null,
+      },
+      { autoCommit: true }
+    );
+  } finally {
+    if (conn) await conn.close();
+  }
+}
+
+export async function isEmailExists(email: string): Promise<boolean> {
+  let conn;
+  try {
+    conn = await getOracleConnection();
+
+    const sql = `
+      SELECT COUNT(*) AS "cnt"
+      FROM users
+      WHERE email = :email
+    `;
+
+    const result = await conn.execute(sql, { email }, { outFormat: 4002 });
+    const cnt = (result.rows?.[0] as any)?.cnt ?? 0;
+
+    return Number(cnt) > 0;
+  } finally {
+    if (conn) await conn.close();
+  }
+};

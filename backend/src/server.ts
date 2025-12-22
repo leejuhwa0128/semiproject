@@ -1,11 +1,5 @@
 import oracledb from "oracledb";
 
-// Thick Mode 활성화
-oracledb.initOracleClient({
-  libDir: "C:\\Users\\An\\Desktop\\instantclient-basic-windows.x64-21.19.0.0.0dbru\\instantclient_21_19"
-});
-
-
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import mediaRouter from "./routes/posts/media.routes";
