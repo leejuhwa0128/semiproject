@@ -22,6 +22,10 @@ router.get("/me", authMiddleware, async (req: AuthRequest, res) => {
       email: user.email,
       intro: user.intro,
       profileImageUrl: user.profileImageUrl,
+      postCount: user.postCount ?? 0,
+      followerCount: user.followerCount ?? 0,
+      followingCount: user.followingCount ?? 0,
+      
     });
   } catch (err) {
     console.error(err);

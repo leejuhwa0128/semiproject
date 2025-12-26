@@ -14,7 +14,7 @@
 
 /* 오른쪽 화면 전체 — 사이드바 너비 제외 */
 .main-content {
-  margin-left: 240px;
-  padding: 20px;
-  width: calc(100% - 240px);
+  height: 100vh;
+  overflow-y: auto;   /* ✅ 스크롤로 늘어나게 */
+  overflow-x: hidden;
 }

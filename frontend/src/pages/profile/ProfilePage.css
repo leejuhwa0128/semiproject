@@ -1,13 +1,29 @@
 .profile-page {
-  padding: 40px 60px;
+  padding: 40px 300px;
+
   color: #111;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* 상단 영역 전체 */
+/* =========================
+   상단 프로필 영역
+   ========================= */
 .profile-header {
   display: flex;
   gap: 40px;
   margin-bottom: 40px;
+  padding-left: 130px;
+  width: 100%;
+  max-width: 900px;
+  justify-content: center;
+}
+
+/* 👉 사이드바 고려해서 오른쪽으로 살짝 이동 */
+.profile-header {
+  transform: translateX(60px); /* 필요하면 40~80px 조절 */
 }
 
 /* 프로필 사진 */
@@ -23,6 +39,7 @@
   border-radius: 50%;
   border: 2px solid #ddd;
   overflow: hidden;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,9 +61,10 @@
   color: #666;
 }
 
-/* 정보 영역 */
+/* 오른쪽 정보 영역 */
 .profile-info {
   flex: 1;
+  max-width: 520px;
 }
 
 .profile-top-row {
@@ -61,14 +79,7 @@
   font-weight: 600;
 }
 
-.profile-icon-btn {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: 20px;
-}
-
-/* 게시물 / 팔로워 / 팔로우 */
+/* 게시물 / 팔로워 / 팔로잉 */
 .profile-counts {
   display: flex;
   gap: 24px;
@@ -94,7 +105,7 @@
   margin-bottom: 20px;
 }
 
-/* 버튼들 */
+/* 버튼 */
 .profile-buttons {
   display: flex;
   gap: 10px;
@@ -113,13 +124,21 @@
   background-color: #f0f0f0;
 }
 
-/* 탭 영역 */
+/* =========================
+   탭 영역
+   ========================= */
 .profile-tabs {
   display: flex;
+  justify-content: center;
   gap: 20px;
+
+  width: 100%;
+  max-width: 900px;
   border-top: 1px solid #ddd;
   margin-top: 20px;
   padding-top: 10px;
+
+  transform: translateX(60px); /* 상단과 동일 이동 */
 }
 
 .profile-tab {
@@ -135,8 +154,89 @@
   border-bottom: 2px solid #111;
 }
 
-/* 아래 내용 */
+/* =========================
+   게시글 영역
+   ========================= */
 .profile-content {
-  margin-top: 20px;
-  min-height: 200px;
+  width: 100%;
+  max-width: 900px;
+  overflow: visible;
+  height: auto;
+  min-height: 0;
+
+  transform: translateX(60px); /* 상단과 동일 이동 */
+}
+
+/* 게시글 그리드 (1줄 3개) */
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 12px;
+}
+
+/* 정사각형 카드 */
+.profile-grid-item {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #eee;
+}
+
+.profile-grid-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* =========================
+   더보기 버튼
+   ========================= */
+.profile-loadmore-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0 40px;
+}
+
+.profile-loadmore-btn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 800;
+  background: #111;
+  color: #fff;
+}
+
+.profile-loadmore-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ✅ 여러장 아이콘(겹침) */
+.profile-grid-item {
+  position: relative; /* 오버레이 기준 */
+}
+
+.profile-multi-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+
+  display: grid;
+  place-items: center;
+
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-weight: 900;
+  font-size: 14px;
+
+  pointer-events: none; /* 클릭 방해 X */
 }

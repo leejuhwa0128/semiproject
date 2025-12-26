@@ -39,3 +39,4 @@ export const createPost = async (
     if (conn) await conn.close();
   }
 };
+
