@@ -18,6 +18,7 @@ import mainRouter from "./routes/main/main.routes";
 
 // posts
 import postsRouter from "./routes/posts/posts.routes";
+import myMediaRouter from "./routes/posts/myposts.routes";
 
 //DB 연결
 import "dotenv/config";
@@ -53,6 +54,9 @@ app.use('/api/sign', signupRouter);
 
 // 유저 라우터
 app.use("/api/users", userRoutes);
+
+// 유저 게시글 라우터
+app.use("/api/posts", myMediaRouter);
 
 // 메인 페이지
 app.use("/api/main", mainRouter);
