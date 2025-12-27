@@ -29,10 +29,66 @@
 .post-preview-box {
   flex: 1;
   border-right: 1px solid #dbdbdb;
+  position: relative;
+  overflow: hidden;
+
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* ✅ 오타 제거 + flex 제거(필요없음) */
+.carousel {
+  width: 100%;
+  height: 100%;
   position: relative;
+}
+
+/* ✅ 버튼이 뒤로 안 가리도록 z-index + position */
+.carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  position: relative;
+  z-index: 1;
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5; /* ✅ 핵심 */
+}
+
+.carousel-btn.left {
+  left: 10px;
+}
+.carousel-btn.right {
+  right: 10px;
+}
+
+.carousel-indicator {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 13px;
+  z-index: 5; /* ✅ 핵심 */
 }
 
 .file-select {
@@ -50,29 +106,21 @@
   display: none;
 }
 
-.preview-images img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
 .post-write-box {
   width: 40%;
   padding: 15px;
-  display: flex;             
-  flex-direction: column;     
+  display: flex;
+  flex-direction: column;
 }
 
 .post-write-box textarea {
   width: 100%;
-  flex: 1;          
+  flex: 1;
   border: none;
   outline: none;
   resize: none;
   font-size: 16px;
 }
-
-
 
 .post-upload-btn {
   width: 100%;
@@ -107,4 +155,3 @@
   font-weight: bold;
   margin-left: 6px;
 }
-

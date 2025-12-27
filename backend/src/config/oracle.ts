@@ -1,5 +1,9 @@
 import oracledb, { Pool, Connection } from "oracledb";
 
+oracledb.initOracleClient({
+  libDir: "C:\\Users\\An\\Desktop\\instantclient-basic-windows.x64-21.19.0.0.0dbru\\instantclient_21_19",
+});
+
 oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
 
 let pool: Pool | null = null;
