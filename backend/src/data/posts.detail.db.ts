@@ -1,12 +1,18 @@
-// 프로필 게시글 상세
-
+// src/data/posts.detail.db.ts
 import { getOracleConnection } from "../config/oracle";
 
 export interface PostDetailMedia {
   mediaId: number;
   mediaUrl: string;
   mediaType: string | null;
-  createdAt: Date;
+  createdAt: string; // ✅ Date -> string
+}
+
+// ✅ 최신 좋아요 1명 정보 타입
+export interface LatestLiker {
+  userId: number;
+  nickname: string;
+  profileImageUrl: string | null;
 }
 
 export interface PostDetail {
@@ -15,11 +21,19 @@ export interface PostDetail {
   nickname: string;
   profileImageUrl: string | null;
   content: string;
-  createdAt: Date;
+  createdAt: string; // ✅ Date -> string
   media: PostDetailMedia[];
   likeCount: number;
   isLiked: boolean;
+
+  latestLiker: LatestLiker | null;
 }
+
+const toIso = (v: any) => {
+  if (!v) return null;
+  const d = v instanceof Date ? v : new Date(v);
+  return d.toISOString();
+};
 
 /**
  * ✅ 내 게시글 상세(미디어 여러장 포함)
@@ -78,7 +92,15 @@ export async function findMyPostDetail(
     `;
 
     const mediaRes = await conn.execute(mediaSql, { postId }, { outFormat: 4002 });
-    const media = ((mediaRes.rows as any[]) ?? []) as PostDetailMedia[];
+    const mediaRows = (mediaRes.rows as any[]) ?? [];
+
+    // ✅ media도 createdAt을 string으로 변환해서 반환
+    const media: PostDetailMedia[] = mediaRows.map((m) => ({
+      mediaId: Number(m.mediaId),
+      mediaUrl: String(m.mediaUrl),
+      mediaType: m.mediaType ?? null,
+      createdAt: toIso(m.createdAt)!,
+    }));
 
     // ✅ 좋아요 count
     const likeCountSql = `
@@ -98,18 +120,45 @@ export async function findMyPostDetail(
     const isLikedRes = await conn.execute(isLikedSql, { postId, userId }, { outFormat: 4002 });
     const isLiked = Number((isLikedRes.rows?.[0] as any)?.cnt ?? 0) > 0;
 
+    // ✅ 최신 좋아요 1명 (없으면 null)
+    const latestLikerSql = `
+      SELECT
+        u.user_id AS "userId",
+        u.nickname AS "nickname",
+        u.profile_image_url AS "profileImageUrl"
+      FROM post_likes pl
+      JOIN users u ON u.user_id = pl.user_id
+      WHERE pl.post_id = :postId
+      ORDER BY pl.created_at DESC
+      FETCH FIRST 1 ROWS ONLY
+    `;
+    const latestRes = await conn.execute(latestLikerSql, { postId }, { outFormat: 4002 });
+    const latestRow =
+      latestRes.rows && latestRes.rows.length > 0 ? (latestRes.rows[0] as any) : null;
+
+    const latestLiker: LatestLiker | null = latestRow
+      ? {
+          userId: Number(latestRow.userId),
+          nickname: String(latestRow.nickname),
+          profileImageUrl: latestRow.profileImageUrl ?? null,
+        }
+      : null;
+
     return {
-      postId: post.postId,
-      userId: post.userId,
-      nickname: post.nickname,
+      postId: Number(post.postId),
+      userId: Number(post.userId),
+      nickname: String(post.nickname),
       profileImageUrl: post.profileImageUrl ?? null,
       content: post.content ?? "",
-      createdAt: post.createdAt,
+      createdAt: toIso(post.createdAt) ?? "", // ✅ string으로
       media,
       likeCount,
       isLiked,
+      latestLiker,
     };
   } finally {
-    if (conn) await conn.close();
+    try {
+      if (conn) await conn.close();
+    } catch {}
   }
 }

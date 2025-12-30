@@ -21,6 +21,7 @@ function LoginForm() {
       });
 
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("userId", String(res.data.user.userId));
 
       alert("로그인 성공!");
       navigate("/main"); //로그인 성공 -> 메인 페이지

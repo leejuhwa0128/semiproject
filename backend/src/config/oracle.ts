@@ -1,8 +1,20 @@
 import oracledb, { Pool, Connection } from "oracledb";
 
-oracledb.initOracleClient({
-  libDir: "C:\\Users\\An\\Desktop\\instantclient-basic-windows.x64-21.19.0.0.0dbru\\instantclient_21_19",
-});
+// OS별 Instant Client 경로를 env로 분리
+const isWindows = process.platform === "win32";
+const isMac = process.platform === "darwin";
+
+let libDir: string | undefined;
+
+if (isWindows) {
+  libDir = process.env.ORACLE_CLIENT_LIB_DIR_WINDOWS;
+} else if (isMac) {
+  libDir = process.env.ORACLE_CLIENT_LIB_DIR_MAC;
+}
+// libDir가 있을 때만 Thick mode 활성화
+if (libDir) {
+  oracledb.initOracleClient({ libDir });
+}
 
 oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
 

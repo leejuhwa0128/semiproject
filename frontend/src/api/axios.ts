@@ -5,18 +5,16 @@ const api = axios.create({
 });
 
 // 요청 인터셉터
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
 
-    if (token && config.headers) {
-      config.headers["Authorization"] = `Bearer ${token}`;
-    }
+  if (token) {
+    config.headers = config.headers ?? {};
+    config.headers.Authorization = `Bearer ${token}`;
+  }
 
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+  return config;
+});
 
 // 응답 인터셉터
 api.interceptors.response.use(

@@ -2,10 +2,9 @@ import oracledb from "oracledb";
 
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+
+// posts media
 import mediaRouter from "./routes/posts/media.routes";
-
-
-
 
 // users
 import findRouter from "./routes/users/find.routes";
@@ -19,6 +18,14 @@ import mainRouter from "./routes/main/main.routes";
 // posts
 import postsRouter from "./routes/posts/posts.routes";
 import myMediaRouter from "./routes/posts/myposts.routes";
+import commentsRouter from "./routes/posts/comments.routes";
+
+import myPostRoutes from "./routes/posts/myposts.routes";
+import userPostRoutes from "./routes/posts/userposts.routes";
+
+// api follows
+import followRouter from "./routes/api/follows.routes";
+
 
 //DB 연결
 import "dotenv/config";
@@ -57,6 +64,11 @@ app.use("/api/users", userRoutes);
 
 // 유저 게시글 라우터
 app.use("/api/posts", myMediaRouter);
+app.use("/api/follows", followRouter);
+app.use("/api/comments", commentsRouter);
+
+app.use("/api/posts", myPostRoutes);
+app.use("/api/posts", userPostRoutes);
 
 // 메인 페이지
 app.use("/api/main", mainRouter);
@@ -65,6 +77,8 @@ app.use("/api/main", mainRouter);
 app.use("/uploads", express.static("uploads"));  
 app.use("/api/posts", postsRouter);
 app.use("/api/media", mediaRouter);
+
+
 
 // 서버 시작 (Oracle 풀 준비 후)
 (async () => {

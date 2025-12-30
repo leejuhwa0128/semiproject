@@ -336,3 +336,76 @@ export async function isEmailExists(email: string): Promise<boolean> {
     if (conn) await conn.close();
   }
 };
+
+export async function findMyProfile(userId: number) {
+  const conn = await getOracleConnection();
+  try {
+    const r = await conn.execute(
+      `
+      SELECT
+        user_id AS "userId",
+        login_id AS "loginId",
+        nickname,
+        intro,
+        profile_image_url AS "profileImageUrl",
+        (SELECT COUNT(*) FROM posts WHERE user_id = u.user_id) AS "postCount",
+        (SELECT COUNT(*) FROM follow WHERE target_user_id = u.user_id) AS "followerCount",
+        (SELECT COUNT(*) FROM follow WHERE user_id = u.user_id) AS "followingCount"
+      FROM users u
+      WHERE user_id = :userId
+      `,
+      { userId },
+      { outFormat: 4002 }
+    );
+
+    return r.rows![0];
+  } finally {
+    await conn.close();
+  }
+}
+
+export async function findUserProfile(userId: number) {
+  const conn = await getOracleConnection();
+  try {
+    const sql = `
+      SELECT
+        u.user_id AS "userId",
+        u.login_id AS "loginId",
+        u.nickname AS "nickname",
+        u.intro AS "intro",
+        u.profile_image_url AS "profileImageUrl",
+
+        (SELECT COUNT(*) FROM posts p WHERE p.user_id = u.user_id) AS "postCount",
+
+        (SELECT COUNT(*)
+           FROM follow f
+          WHERE f.following_id = u.user_id
+        ) AS "followerCount",
+
+        (SELECT COUNT(*)
+           FROM follow f
+          WHERE f.follower_id = u.user_id
+        ) AS "followingCount"
+
+      FROM users u
+      WHERE u.user_id = :userId
+    `;
+
+    const r = await conn.execute(sql, { userId }, { outFormat: 4002 });
+    if (!r.rows || r.rows.length === 0) return null;
+
+    const row: any = r.rows[0];
+    return {
+      userId: Number(row.userId),
+      loginId: String(row.loginId ?? ""),
+      nickname: String(row.nickname ?? ""),
+      intro: row.intro ?? null,
+      profileImageUrl: row.profileImageUrl ?? null,
+      postCount: Number(row.postCount ?? 0),
+      followerCount: Number(row.followerCount ?? 0),
+      followingCount: Number(row.followingCount ?? 0),
+    };
+  } finally {
+    await conn.close();
+  }
+}

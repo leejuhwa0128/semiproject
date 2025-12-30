@@ -23,7 +23,7 @@
 
 /* 👉 사이드바 고려해서 오른쪽으로 살짝 이동 */
 .profile-header {
-  transform: translateX(60px); /* 필요하면 40~80px 조절 */
+  transform: translateX(140px); /* 필요하면 40~80px 조절 */
 }
 
 /* 프로필 사진 */
@@ -138,7 +138,7 @@
   margin-top: 20px;
   padding-top: 10px;
 
-  transform: translateX(60px); /* 상단과 동일 이동 */
+  transform: translateX(140px); /* 상단과 동일 이동 */
 }
 
 .profile-tab {
@@ -164,7 +164,7 @@
   height: auto;
   min-height: 0;
 
-  transform: translateX(60px); /* 상단과 동일 이동 */
+  transform: translateX(140px); /* 상단과 동일 이동 */
 }
 
 /* 게시글 그리드 (1줄 3개) */
