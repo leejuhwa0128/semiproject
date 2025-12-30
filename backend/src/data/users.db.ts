@@ -9,7 +9,7 @@ export interface User {
   nickname: string;
   currentEmotionId: number | null;
   createdAt: Date;
-  intro: string | null;             
+  intro: string | null;
   profileImageUrl: string | null;
 }
 
@@ -286,6 +286,7 @@ export async function updateUserProfile(
     nickname?: string;
     email?: string;
     intro?: string | null;
+    profileImageUrl?: string; // ✅ 추가
   }
 ): Promise<void> {
   let conn;
@@ -298,17 +299,19 @@ export async function updateUserProfile(
       SET
         nickname = COALESCE(:nickname, nickname),
         email    = COALESCE(:email, email),
-        intro    = COALESCE(:intro, intro)
+        intro    = COALESCE(:intro, intro),
+        profile_image_url = COALESCE(:profileImageUrl, profile_image_url)
       WHERE user_id = :userId
     `;
 
     await conn.execute(
       sql,
       {
-        userId,
-        nickname: data.nickname ?? null,
-        email: data.email ?? null,
-        intro: data.intro ?? null,
+        userId,                                // :userId
+        nickname: data.nickname ?? null,        // :nickname
+        email: data.email ?? null,              // :email
+        intro: data.intro ?? null,              // :intro
+        profileImageUrl: data.profileImageUrl ?? null, // :profileImageUrl ✅
       },
       { autoCommit: true }
     );
@@ -316,6 +319,7 @@ export async function updateUserProfile(
     if (conn) await conn.close();
   }
 }
+
 
 export async function isEmailExists(email: string): Promise<boolean> {
   let conn;
@@ -364,7 +368,7 @@ export async function findMyProfile(userId: number) {
   }
 }
 
-export async function findUserProfile(userId: number) {
+export async function findUserProfile(targetUserId: number, viewerUserId: number) {
   const conn = await getOracleConnection();
   try {
     const sql = `
@@ -385,13 +389,28 @@ export async function findUserProfile(userId: number) {
         (SELECT COUNT(*)
            FROM follow f
           WHERE f.follower_id = u.user_id
-        ) AS "followingCount"
+        ) AS "followingCount",
+
+        CASE
+          WHEN EXISTS (
+            SELECT 1
+              FROM follow f
+             WHERE f.follower_id = :viewerUserId
+               AND f.following_id = u.user_id
+          )
+          THEN 1 ELSE 0
+        END AS "isFollowing"
 
       FROM users u
-      WHERE u.user_id = :userId
+      WHERE u.user_id = :targetUserId
     `;
 
-    const r = await conn.execute(sql, { userId }, { outFormat: 4002 });
+    const r = await conn.execute(
+      sql,
+      { targetUserId, viewerUserId },
+      { outFormat: 4002 }
+    );
+
     if (!r.rows || r.rows.length === 0) return null;
 
     const row: any = r.rows[0];
@@ -404,6 +423,7 @@ export async function findUserProfile(userId: number) {
       postCount: Number(row.postCount ?? 0),
       followerCount: Number(row.followerCount ?? 0),
       followingCount: Number(row.followingCount ?? 0),
+      isFollowing: Number(row.isFollowing ?? 0) === 1, // ✅ 핵심
     };
   } finally {
     await conn.close();

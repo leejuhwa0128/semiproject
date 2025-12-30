@@ -1,15 +1,16 @@
 import oracledb from "oracledb";
 
-import express, { Request, Response } from 'express';
-import cors from 'cors';
+import express, { Request, Response } from "express";
+import cors from "cors";
+import path from "path"; // ✅ 추가
 
 // posts media
 import mediaRouter from "./routes/posts/media.routes";
 
 // users
 import findRouter from "./routes/users/find.routes";
-import loginRouter from './routes/users/login.routes';
-import signupRouter from './routes/users/sign.routes';
+import loginRouter from "./routes/users/login.routes";
+import signupRouter from "./routes/users/sign.routes";
 import userRoutes from "./routes/users/user.routes";
 
 // main
@@ -17,15 +18,12 @@ import mainRouter from "./routes/main/main.routes";
 
 // posts
 import postsRouter from "./routes/posts/posts.routes";
-import myMediaRouter from "./routes/posts/myposts.routes";
 import commentsRouter from "./routes/posts/comments.routes";
-
 import myPostRoutes from "./routes/posts/myposts.routes";
 import userPostRoutes from "./routes/posts/userposts.routes";
 
 // api follows
 import followRouter from "./routes/api/follows.routes";
-
 
 //DB 연결
 import "dotenv/config";
@@ -40,50 +38,52 @@ app.use(express.json());
 // CORS 설정
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
 
+// ✅ 업로드 폴더 정적 서빙 (한 번만!)
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
 // 헬스 체크
-app.get('/api/health', (req: Request, res: Response) => {
-  res.json({ status: 'ok', message: 'Backend is running 🚀' });
+app.get("/api/health", (req: Request, res: Response) => {
+  res.json({ status: "ok", message: "Backend is running 🚀" });
 });
+
+// ===== 라우터 =====
 
 // 이메일 인증
 app.use("/api/users", findRouter);
 
 // 로그인 라우터
-app.use('/api/users', loginRouter);
+app.use("/api/users", loginRouter);
 
 // 회원가입 라우터
-app.use('/api/sign', signupRouter);
+app.use("/api/sign", signupRouter);
 
 // 유저 라우터
 app.use("/api/users", userRoutes);
 
-// 유저 게시글 라우터
-app.use("/api/posts", myMediaRouter);
+// 유저 게시글/팔로우/댓글
 app.use("/api/follows", followRouter);
 app.use("/api/comments", commentsRouter);
 
+// 게시글
 app.use("/api/posts", myPostRoutes);
 app.use("/api/posts", userPostRoutes);
+app.use("/api/posts", postsRouter);
 
-// 메인 페이지
+// 메인
 app.use("/api/main", mainRouter);
 
-// 📌 업로드(미디어) 라우트 추가
-app.use("/uploads", express.static("uploads"));  
-app.use("/api/posts", postsRouter);
+// 미디어
 app.use("/api/media", mediaRouter);
-
-
 
 // 서버 시작 (Oracle 풀 준비 후)
 (async () => {
   try {
-    await initOraclePool(); // 👈 여기서 한 번 생성
+    await initOraclePool();
     app.listen(PORT, () => {
       console.log(`✅ Backend server running at http://localhost:${PORT}`);
     });

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authMiddleware, AuthRequest } from "../../middleware/auth";
-import { countMyPostMedia, findMyPostMedia } from "../../data/myposts.db";
-import { findMyPostDetail } from "../../data/posts.detail.db";
+import { countMyPostMedia, findMyPostMedia, deletePostById } from "../../data/myposts.db";
+import { findPostDetail } from "../../data/posts.detail.db";
 import { togglePostLike } from "../../data/likes.db";
 import { createComment, listPostComments } from "../../data/comments.db";
 import { findPostLikers } from "../../data/postlikes.users.db";
@@ -58,7 +58,7 @@ router.get("/:postId", authMiddleware, async (req: AuthRequest, res) => {
   }
 
   try {
-    const detail = await findMyPostDetail(userId, postId);
+    const detail = await findPostDetail(userId, postId);
     if (!detail) {
       return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
     }
@@ -192,23 +192,32 @@ router.delete("/:postId/comments/:commentId", authMiddleware, async (req: AuthRe
 });
 
 /**
- * GET /api/posts/my-media
+ * ✅ 게시글 삭제
+ * DELETE /api/posts/:postId
  */
-router.get("/my-media", authMiddleware, async (req: AuthRequest, res) => {
+router.delete("/:postId", authMiddleware, async (req: AuthRequest, res) => {
+  const postId = Number(req.params.postId);
   const userId = req.user!.userId;
-  const offset = Number(req.query.offset ?? 0);
-  const limit = Number(req.query.limit ?? 3);
 
-  const items = await findMyPostMedia(userId, offset, limit);
-  const total = await countMyPostMedia(userId);
+  if (!Number.isFinite(postId)) {
+    return res.status(400).json({ message: "잘못된 postId" });
+  }
 
-  res.json({
-    items,
-    total,
-    offset,
-    limit,
-    hasMore: offset + items.length < total,
-  });
+  try {
+    const result = await deletePostById({ postId, userId });
+
+    if (result === "NOT_FOUND") {
+      return res.status(404).json({ message: "게시글이 없습니다." });
+    }
+    if (result === "FORBIDDEN") {
+      return res.status(403).json({ message: "삭제 권한이 없습니다." });
+    }
+
+    return res.json({ success: true });
+  } catch (e) {
+    console.error("❌ 게시글 삭제 오류:", e);
+    return res.status(500).json({ message: "서버 오류" });
+  }
 });
 
 export default router;

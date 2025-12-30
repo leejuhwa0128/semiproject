@@ -116,3 +116,64 @@ export async function countMyPostMedia(userId: number): Promise<number> {
     if (conn) await conn.close();
   }
 }
+export async function deletePostById(params: { postId: number; userId: number }) {
+  const { postId, userId } = params;
+  let conn: any;
+
+  try {
+    conn = await getOracleConnection();
+
+    // 1) 게시글 존재 + 작성자 확인
+    const check = await conn.execute(
+      `
+      SELECT user_id AS "userId"
+      FROM posts
+      WHERE post_id = :postId
+      `,
+      { postId },
+      { outFormat: 4002 }
+    );
+
+    if (!check.rows || check.rows.length === 0) return "NOT_FOUND";
+
+    const ownerId = Number((check.rows[0] as any).userId);
+    if (ownerId !== userId) return "FORBIDDEN";
+
+    // 2) 트랜잭션 시작 (autoCommit false)
+    // (A) 댓글 삭제
+    await conn.execute(
+      `DELETE FROM comments WHERE post_id = :postId`,
+      { postId }
+    );
+
+    // (B) 좋아요 삭제
+    await conn.execute(
+      `DELETE FROM post_likes WHERE post_id = :postId`,
+      { postId }
+    );
+
+    // (C) 미디어 삭제
+    await conn.execute(
+      `DELETE FROM post_media WHERE post_id = :postId`,
+      { postId }
+    );
+
+    // (D) 게시글 삭제 (마지막)
+    await conn.execute(
+      `DELETE FROM posts WHERE post_id = :postId`,
+      { postId }
+    );
+
+    await conn.commit();
+    return "OK";
+  } catch (e) {
+    try {
+      if (conn) await conn.rollback();
+    } catch {}
+    throw e;
+  } finally {
+    try {
+      if (conn) await conn.close();
+    } catch {}
+  }
+}

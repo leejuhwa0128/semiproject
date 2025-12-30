@@ -1,18 +1,187 @@
-body { outline: 5px solid red; }
-/* 오른쪽 인스타처럼: 위는 고정, 댓글만 스크롤, 아래는 고정 */
+/* =========================
+   Post Detail Modal (PDM)
+   - right: insta-like (top fixed, comments scroll, bottom fixed)
+   - fix: slide overlay blocks clicks (z-index/overflow)
+   ========================= */
+
+/* ✅ 모달 오버레이(중앙에 띄우기) */
+.pdm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ✅ 모달 박스 */
+.pdm-modal {
+  width: min(1100px, 92vw);
+  height: min(720px, 90vh);
+  background: #fff;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 닫기 버튼 */
+.pdm-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  z-index: 50;
+  border: none;
+  background: transparent;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+/* 좌: 이미지 / 우: 내용 */
+.pdm-body {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  height: 100%;
+}
+
+/* =========================
+   LEFT (media)
+   ========================= */
+.pdm-left {
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* ✅ 오른쪽 클릭 막는 “덮임” 방지 핵심 */
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.pdm-image-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.pdm-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* 이미지 없을 때 */
+.pdm-empty {
+  color: #fff;
+  opacity: 0.85;
+}
+
+/* 좌우 이동 버튼 */
+.pdm-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 26px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pdm-next {
+  right: 12px;
+}
+
+.pdm-nav:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* =========================
+   RIGHT (panel)
+   ========================= */
+.pdm-right {
+  border-left: 1px solid #eee;
+  height: 100%;
+  min-width: 0;
+
+  /* ✅ 오른쪽 패널이 항상 위로 */
+  position: relative;
+  z-index: 20;
+  background: #fff;
+}
+
+/* 오른쪽 인스타처럼: 위 고정 + 가운데 스크롤 + 아래 고정 */
 .insta-right {
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden;  
-  min-height: 0;  
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* 상단 유저 */
+.pdm-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #eee;
+}
+
+.pdm-avatar img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.pdm-avatar-placeholder {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #eee;
+}
+
+.pdm-user-meta {
+  min-width: 0;
+}
+
+.pdm-nickname {
+  font-weight: 700;
+}
+
+.pdm-date-only {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* 본문 */
+.pdm-content {
+  padding: 12px 14px;
+  border-bottom: 1px solid #eee;
+  white-space: pre-wrap;
 }
 
 /* 댓글 스크롤 영역 */
 .pdm-comments-scroll {
   flex: 1;
   overflow-y: auto;
-   min-height: 0; 
+  min-height: 0;
   padding: 12px 16px;
 }
 
@@ -67,11 +236,14 @@ body { outline: 5px solid red; }
   cursor: pointer;
 }
 
-/* 댓글 아이템 */
+/* =========================
+   Comments item
+   ========================= */
 .pdm-comment {
   display: flex;
   gap: 10px;
   padding: 10px 0;
+  align-items: flex-start;
 }
 
 .pdm-comment-avatar img {
@@ -90,11 +262,66 @@ body { outline: 5px solid red; }
   background: #eee;
 }
 
-/* 좋아요 유저 모달 */
+.pdm-comment-body {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 닉네임 + 내용 간격 */
+.pdm-comment-line {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.pdm-comment-nick {
+  flex: none;
+}
+
+.pdm-comment-text {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+
+/* 오른쪽 ... 버튼 */
+.pdm-comment-more {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 6px 8px;
+  font-size: 18px;
+  line-height: 1;
+  opacity: 0.7;
+}
+
+.pdm-comment-more:hover {
+  opacity: 1;
+}
+
+/* 날짜 */
+.pdm-comment-sub {
+  margin-top: 4px;
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   Like users modal
+   ========================= */
 .pdm-likeusers-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -131,6 +358,12 @@ body { outline: 5px solid red; }
 .pdm-likeusers-list {
   overflow-y: auto;
   padding: 8px 0;
+  max-height: 420px;
+}
+
+.pdm-likeusers-empty {
+  padding: 20px;
+  text-align: center;
 }
 
 .pdm-likeuser-row {
@@ -166,222 +399,13 @@ body { outline: 5px solid red; }
   opacity: 0.7;
 }
 
-/* ✅ 모달 오버레이(중앙에 띄우기) */
-.pdm-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  z-index: 99999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ✅ 모달 박스 */
-.pdm-modal {
-  width: min(1100px, 92vw);
-  height: min(720px, 90vh);
-  background: #fff;
-  border-radius: 16px;
-  position: relative;
-  overflow: hidden;
-}
-
-/* 닫기 버튼 */
-.pdm-close {
-  position: absolute;
-  top: 10px;
-  right: 14px;
-  z-index: 10;
-  border: none;
-  background: transparent;
-  font-size: 28px;
-  cursor: pointer;
-}
-
-/* 좌: 이미지 / 우: 내용 */
-.pdm-body {
-  display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  height: 100%;
-}
-
-/* 왼쪽 이미지 영역 */
-.pdm-left {
-  background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pdm-image-wrap {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.pdm-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-/* 이미지 없을 때 */
-.pdm-empty {
-  color: #fff;
-  opacity: 0.85;
-}
-
-/* 오른쪽 패널 */
-.pdm-right {
-  border-left: 1px solid #eee;
-  height: 100%;
-  min-width: 0;
-}
-
-/* 상단 유저 */
-.pdm-user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border-bottom: 1px solid #eee;
-}
-
-.pdm-avatar img {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.pdm-avatar-placeholder {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: #eee;
-}
-
-.pdm-user-meta { min-width: 0; }
-.pdm-nickname { font-weight: 700; }
-.pdm-date-only { font-size: 12px; opacity: 0.7; }
-
-/* 본문 */
-.pdm-content {
-  padding: 12px 14px;
-  border-bottom: 1px solid #eee;
-  white-space: pre-wrap;
-}
-
-/* 좋아요 버튼 최소 */
-.pdm-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.pdm-like-btn {
-  border: none;
-  background: transparent;
-  font-size: 22px;
-  cursor: pointer;
-}
-
-.pdm-like-btn.liked {
-  transform: translateY(-1px);
-}
-
-/* 좌우 이동 버튼 */
-.pdm-nav{
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 5;
-
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-
-  border: none;
-  background: rgba(0,0,0,0.55);
-  color: #fff;
-  font-size: 26px;
-  cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pdm-next{
-  right: 12px;
-}
-
-.pdm-nav:disabled{
-  opacity: 0.3;
-  cursor: default;
-}
-
-/* ✅ 닉네임 + 내용 간격 */
-.pdm-comment-line {
-  display: flex;
-  gap: 8px;           /* ✅ 띄우기 */
-  align-items: baseline;
-  flex-wrap: wrap;
-}
-
-.pdm-comment-nick {
-  flex: none;
-}
-
-.pdm-comment-text {
-  flex: 1;
-  min-width: 0;
-  word-break: break-word;
-}
-
-/* ✅ 댓글 한 줄 레이아웃: 오른쪽 ... 버튼 공간 */
-.pdm-comment {
-  display: flex;
-  gap: 10px;
-  padding: 10px 0;
-  align-items: flex-start;
-}
-
-.pdm-comment-body {
-  flex: 1;
-  min-width: 0;
-}
-
-/* ✅ 오른쪽 ... 버튼 */
-.pdm-comment-more {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  padding: 6px 8px;
-  font-size: 18px;
-  line-height: 1;
-  opacity: 0.7;
-}
-
-.pdm-comment-more:hover {
-  opacity: 1;
-}
-
-/* ✅ 날짜 스타일 */
-.pdm-comment-sub {
-  margin-top: 4px;
-  font-size: 12px;
-  opacity: 0.6;
-}
-
-/* ✅ 삭제|취소 모달 */
+/* =========================
+   Delete/Cancel menu modal
+   ========================= */
 .pdm-menu-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -414,5 +438,63 @@ body { outline: 5px solid red; }
   font-weight: 600;
 }
 
-.clickable { cursor: pointer; }
-.clickable:hover { text-decoration: underline; }
+.pdm-like-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pdm-like-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0;
+}
+
+.pdm-like-text {
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.pdm-actions{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ✅ 우측 상단 버튼 묶음 (... + X) */
+.pdm-top-actions {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ✅ ... 버튼 */
+.pdm-more {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  padding: 4px 6px;
+  opacity: 0.8;
+}
+.pdm-more:hover {
+  opacity: 1;
+}
+
+/* ✅ 기존 닫기 버튼 absolute 덮어쓰기 */
+.pdm-close {
+  position: static; /* 중요 */
+  border: none;
+  background: transparent;
+  font-size: 28px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 6px;
+}

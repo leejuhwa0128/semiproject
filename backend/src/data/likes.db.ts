@@ -1,5 +1,11 @@
 import { getOracleConnection } from "../config/oracle";
 
+export type LatestLiker = {
+  userId: number;
+  nickname: string;
+  profileImageUrl: string | null;
+} | null;
+
 export async function countPostLikes(postId: number): Promise<number> {
   let conn;
   try {
@@ -38,15 +44,12 @@ export async function isPostLikedByUser(
 }
 
 /**
- * ✅ 좋아요 토글
- * - 이미 좋아요면 삭제
- * - 아니면 insert
- * - 최종 상태(isLiked)와 likeCount 반환
+ * 좋아요 토글
  */
 export async function togglePostLike(
   postId: number,
   userId: number
-): Promise<{ isLiked: boolean; likeCount: number }> {
+): Promise<{ isLiked: boolean; likeCount: number; latestLiker: LatestLiker }> {
   let conn;
   try {
     conn = await getOracleConnection();
@@ -71,7 +74,7 @@ export async function togglePostLike(
         { autoCommit: true }
       );
     } else {
-      // 2-B) 추가 (유니크 제약 때문에 혹시 중복 insert되면 에러날 수 있음)
+      // 2-B) 추가
       await conn.execute(
         `
         INSERT INTO post_likes (like_id, post_id, user_id, created_at)
@@ -84,13 +87,48 @@ export async function togglePostLike(
 
     // 3) 카운트 재조회
     const likeCount = await (async () => {
-      const sql = `SELECT COUNT(*) AS "cnt" FROM post_likes WHERE post_id = :postId`;
+      const sql = `
+        SELECT COUNT(*) AS "cnt"
+        FROM post_likes
+        WHERE post_id = :postId
+      `;
       const r = await conn!.execute(sql, { postId }, { outFormat: 4002 });
       const cnt = (r.rows?.[0] as any)?.cnt ?? 0;
       return Number(cnt);
     })();
 
-    return { isLiked: !liked, likeCount };
+    // 4) 최신 좋아요 누른 사람(좋아요가 0이면 null)
+    const latestLiker: LatestLiker =
+      likeCount === 0
+        ? null
+        : await (async () => {
+            const sql = `
+              SELECT "userId", "nickname", "profileImageUrl"
+              FROM (
+                SELECT
+                  u.user_id           AS "userId",
+                  u.nickname          AS "nickname",
+                  u.profile_image_url AS "profileImageUrl"
+                FROM post_likes pl
+                JOIN users u ON u.user_id = pl.user_id
+                WHERE pl.post_id = :postId
+                ORDER BY pl.created_at DESC, pl.like_id DESC
+              )
+              FETCH FIRST 1 ROWS ONLY
+            `;
+            const r = await conn!.execute(sql, { postId }, { outFormat: 4002 });
+            const row = r.rows?.[0] as any;
+
+            if (!row) return null;
+
+            return {
+              userId: Number(row.userId),
+              nickname: String(row.nickname),
+              profileImageUrl: row.profileImageUrl ? String(row.profileImageUrl) : null,
+            };
+          })();
+
+    return { isLiked: !liked, likeCount, latestLiker };
   } finally {
     if (conn) await conn.close();
   }

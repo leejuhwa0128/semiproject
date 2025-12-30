@@ -240,3 +240,22 @@
 
   pointer-events: none; /* 클릭 방해 X */
 }
+
+.profile-more {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0 24px;
+}
+
+.profile-more-btn {
+  padding: 10px 14px;
+  border: 1px solid #dbdbdb;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.profile-more-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
