@@ -3,7 +3,7 @@ import ProtectedRoute from "./api/ProtectedRoute";
 
 import LoginPage from "./pages/login";
 import SignUpPage from "./pages/signup";
-import MainPage from "./pages/main";
+import MainPage from "./pages/main/MainPage";
 import FindIdForm from "./pages/find/FindIdForm";
 import FindPasswordForm from "./pages/find/FindPasswordForm";
 import LogoutPage from "./pages/logout/LogoutPage";
@@ -12,6 +12,8 @@ import ProfileEditPage from "./pages/profile/ProfileEditPage";
 import Sidebar from "./pages/Sidebar/Sidebar";
 import ProfilePage from "./pages/profile/ProfilePage";
 import "./App.css";
+import StoryCreatePage from "./pages/story/StoryCreatePage";
+
 
 const getMyUserId = () => {
   const v = localStorage.getItem("userId");
@@ -38,6 +40,16 @@ export default function App() {
         <Route path="/find-id" element={<FindIdForm />} />
         <Route path="/find-password" element={<FindPasswordForm />} />
         <Route path="/logout" element={<LogoutPage />} />
+        <Route
+  path="/story/create"
+  element={
+    <ProtectedRoute>
+      <MainLayout>
+        <StoryCreatePage />
+      </MainLayout>
+    </ProtectedRoute>
+  }
+/>
 
         <Route
           path="/main"

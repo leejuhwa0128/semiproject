@@ -22,12 +22,19 @@ import commentsRouter from "./routes/posts/comments.routes";
 import myPostRoutes from "./routes/posts/myposts.routes";
 import userPostRoutes from "./routes/posts/userposts.routes";
 
+//스토리
+import storiesRouter from "./routes/stories/stories.routes";
+
+import storyMediaRouter from "./routes/stories/media.routes";
+
 // api follows
 import followRouter from "./routes/api/follows.routes";
 
 //DB 연결
 import "dotenv/config";
 import { initOraclePool } from "./config/oracle";
+
+
 
 const app = express();
 const PORT = 4000;
@@ -79,6 +86,12 @@ app.use("/api/main", mainRouter);
 
 // 미디어
 app.use("/api/media", mediaRouter);
+
+// 스토리
+app.use("/api/stories/media", storyMediaRouter);
+app.use("/api/stories", storiesRouter);
+
+
 
 // 서버 시작 (Oracle 풀 준비 후)
 (async () => {
