@@ -452,6 +452,10 @@
   padding: 0;
 }
 
+/* ❤️ 좋아요 눌렀을 때 */
+.pdm-like-btn.liked {
+  color: #ed4956; 
+}
 .pdm-like-text {
   cursor: pointer;
   font-size: 14px;
