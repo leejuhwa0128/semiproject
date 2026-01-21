@@ -21,10 +21,10 @@ import postsRouter from "./routes/posts/posts.routes";
 import commentsRouter from "./routes/posts/comments.routes";
 import myPostRoutes from "./routes/posts/myposts.routes";
 import userPostRoutes from "./routes/posts/userposts.routes";
+import postLikeRouter from "./routes/posts/posts.like";
 
 //스토리
 import storiesRouter from "./routes/stories/stories.routes";
-
 import storyMediaRouter from "./routes/stories/media.routes";
 
 // api follows
@@ -34,6 +34,9 @@ import followRouter from "./routes/api/follows.routes";
 import "dotenv/config";
 import { initOraclePool } from "./config/oracle";
 
+// Feed
+import recommendRouter from "./routes/posts/recommend.posts";
+import recommendPostRoutes from "./routes/posts/recommend.posts";
 
 
 const app = express();
@@ -76,6 +79,11 @@ app.use("/api/users", userRoutes);
 app.use("/api/follows", followRouter);
 app.use("/api/comments", commentsRouter);
 
+//Feed
+app.use("/api/posts", recommendRouter);
+app.use("/api/posts", recommendPostRoutes);
+app.use("/api/posts", postLikeRouter);
+
 // 게시글
 app.use("/api/posts", myPostRoutes);
 app.use("/api/posts", userPostRoutes);
@@ -90,7 +98,6 @@ app.use("/api/media", mediaRouter);
 // 스토리
 app.use("/api/stories/media", storyMediaRouter);
 app.use("/api/stories", storiesRouter);
-
 
 
 // 서버 시작 (Oracle 풀 준비 후)

@@ -20,7 +20,8 @@
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.11",
-    "oracledb": "^6.10.0"
+    "oracledb": "^6.10.0",
+    "react-icons": "^5.5.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",

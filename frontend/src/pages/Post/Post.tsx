@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../api/axios";
 import "./Post.css";
 import { useNavigate } from "react-router-dom";
 
 const Post = () => {
   const navigate = useNavigate();
+
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -22,7 +23,7 @@ const Post = () => {
     setCurrentIndex(0);
   };
 
-  //  objectURL 메모리 정리
+  // objectURL 메모리 정리
   useEffect(() => {
     return () => {
       previewUrls.forEach((url) => URL.revokeObjectURL(url));
@@ -38,24 +39,20 @@ const Post = () => {
 
       let mediaUrls: { url: string; type: string }[] = [];
 
-      // 1️⃣ 이미지 업로드 먼저
+      // 1️⃣ 이미지 업로드
       if (selectedFiles.length > 0) {
         const formData = new FormData();
         selectedFiles.forEach((file) => formData.append("media", file));
 
-        const mediaRes = await axios.post(
-          "http://localhost:4000/api/media/upload",
-          formData,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
+        const mediaRes = await api.post("/api/media/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
 
         mediaUrls = mediaRes.data.urls;
-        console.log("📸 업로드 결과:", mediaUrls);
       }
 
-      // 2️⃣ 게시글 + 이미지 DB 저장
-      await axios.post("http://localhost:4000/api/posts", {
-        userId: 1,
+      // 2️⃣ 게시글 저장 (🔥 userId 하드코딩 제거)
+      await api.post("/api/posts", {
         content,
         emotion,
         mediaUrls,
@@ -63,6 +60,8 @@ const Post = () => {
 
       alert("게시글 등록 성공!");
       navigate("/main");
+
+      // 초기화
       setContent("");
       setSelectedFiles([]);
       setPreviewUrls([]);
@@ -82,7 +81,6 @@ const Post = () => {
           <div className="post-preview-box">
             {previewUrls.length === 0 ? (
               <>
-                {/* ✅ label과 input 분리(멀티 선택 안정화) */}
                 <label className="file-select" htmlFor="mediaInput">
                   <span>사진을 선택하세요</span>
                 </label>

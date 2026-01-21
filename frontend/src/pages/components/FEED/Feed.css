@@ -1,0 +1,165 @@
+/* ===== 전체 래퍼 ===== */
+.feed-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.feed-base-emotion {
+  margin: 16px 0;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* ===== 카드 ===== */
+.feed-item {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* ===== 헤더 ===== */
+.feed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+}
+
+.feed-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.feed-profile {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.feed-user {
+  display: flex;
+  flex-direction: column;
+}
+
+.feed-nickname {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.feed-emotion {
+  font-size: 12px;
+  color: #888;
+}
+
+.feed-type {
+  font-size: 12px;
+  color: #aaa;
+}
+
+/* ===== 이미지 슬라이더 ===== */
+.feed-slider {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.feed-image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+}
+
+/* 좌우 이동 버튼 */
+.feed-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.feed-nav.prev { left: 8px; }
+.feed-nav.next { right: 8px; }
+
+/* 도트 */
+.feed-dots {
+  position: absolute;
+  bottom: 8px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.feed-dots .dot {
+  width: 6px;
+  height: 6px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 50%;
+}
+
+.feed-dots .dot.active {
+  background: #fff;
+}
+
+/* ===== 액션 바 (핵심 수정) ===== */
+.feed-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+/* ❤️ 💬 아이콘 버튼 */
+.feed-actions button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+
+  font-size: 22px;      /* 고정 */
+  line-height: 1;       /* 높이 고정 */
+  width: 24px;          /* 클릭 영역 고정 */
+  height: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #262626;
+}
+
+.feed-actions button:hover {
+  opacity: 0.6;
+}
+
+/* 좋아요 눌림 */
+.feed-actions .liked {
+  color: #ed4956;
+  transform: scale(1);  /* 크기 차이 제거 */
+}
+
+/* ===== 텍스트 ===== */
+.feed-like-count {
+  font-weight: 600;
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.feed-caption {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.4;
+}

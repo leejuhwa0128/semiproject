@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
+import FeedList from "../components/FEED/FeedList";
 import "./MainPage.css";
 
 const MainPage = () => {
@@ -15,46 +16,32 @@ const MainPage = () => {
   };
 
   const goStoryCreate = (emotion: number) => {
-    console.log("CLICK EMOTION:", emotion);
-    alert(`emotion ${emotion} clicked`);
     navigate(`/story/create?emotion=${emotion}`);
   };
 
   return (
     <div className="main-page">
+      {/* 🔥 감정 스토리 바 */}
       <div className="emotion-story-wrapper">
-        <button
-          className="story-nav left"
-          onClick={scrollLeft}
-          type="button"
-          aria-label="left"
-        >
-          ‹
-        </button>
+        <button className="story-nav left" onClick={scrollLeft}>‹</button>
 
         <div className="emotion-story-bar" ref={barRef}>
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+          {[1,2,3,4,5,6,7,8,9,10].map((n) => (
             <button
               key={n}
-              type="button"
               className="emotion-story-item"
               onClick={() => goStoryCreate(n)}
-              aria-label={`emotion-${n}`}
             >
               <div className="emotion-circle">{n}</div>
             </button>
           ))}
         </div>
 
-        <button
-          className="story-nav right"
-          onClick={scrollRight}
-          type="button"
-          aria-label="right"
-        >
-          ›
-        </button>
+        <button className="story-nav right" onClick={scrollRight}>›</button>
       </div>
+
+      {/* 📰 추천 피드 */}
+      <FeedList />
     </div>
   );
 };
