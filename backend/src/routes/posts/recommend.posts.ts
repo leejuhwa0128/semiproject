@@ -1,6 +1,6 @@
 import { Router, Response } from "express";
 import { authMiddleware, AuthRequest } from "../../middleware/auth";
-import { getBaseEmotion, getRecommendedFeed } from "../../data/recommend.db";
+import { calculateFinalBaseEmotion, getRecommendedFeed } from "../../data/recommend.db";
 
 const router = Router();
 
@@ -8,7 +8,7 @@ router.get("/recommended", authMiddleware, async (req: AuthRequest, res: Respons
   try {
     const userId = req.user!.userId;
 
-    const baseEmotion = await getBaseEmotion(userId);
+    const baseEmotion = await calculateFinalBaseEmotion(userId);
     const feed = await getRecommendedFeed(baseEmotion, userId);
 
     res.json({ baseEmotion, feed }); // ← 프론트에서 baseEmotion 필요

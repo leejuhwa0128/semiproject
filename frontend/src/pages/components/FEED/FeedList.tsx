@@ -5,15 +5,19 @@ import PostDetailModal from "../../../components/PostDetailModal";
 import "./Feed.css";
 
 const emotionEmojis = [
-  "😞","😔","😐","😌","🙂",
-  "😊","😄","😆","🤩","🥰"
+  "😞", "😔", "😐", "😌", "🙂",
+  "😊", "😄", "😆", "🤩", "🥰"
 ];
 
 export default function FeedList() {
+  /** 원본 피드 */
   const [feed, setFeed] = useState<any[]>([]);
+  /** 정렬된 피드 */
+  const [sortedFeed, setSortedFeed] = useState<any[]>([]);
+  /** 기준 감정 */
   const [baseEmotion, setBaseEmotion] = useState<number | null>(null);
 
-  // ✅ 댓글 모달용 상태
+  /** 댓글 모달 */
   const [openedPostId, setOpenedPostId] = useState<number | null>(null);
 
   /* =========================
@@ -37,26 +41,48 @@ export default function FeedList() {
   }, []);
 
   /* =========================
-     점수 계산 및 콘솔 출력
+     점수 계산 + 프론트 정렬
      (baseEmotion 기준)
   ========================= */
   useEffect(() => {
-    if (!feed || baseEmotion === null) return;
+    if (!feed.length || baseEmotion === null) return;
 
-    // score 계산: 단순 절댓값 차이 기준
-    const feedsWithScore = feed.map(f => {
-      const score = 10 - Math.abs((f.emotion ?? 0) - baseEmotion);
-      return { ...f, score };
-    }).sort((a, b) => b.score - a.score); // score 높은 순
+    const sorted = [...feed]
+      .map((f) => {
+        const emotion = f.emotion ?? f.EMOTION ?? 0;
 
-    // 콘솔 출력
-    console.log("==== 피드 점수 계산 ====");
-    feedsWithScore.forEach(f => {
+        // ✅ 기준 감정과의 거리 기반 점수
+        const score = 10 - Math.abs(emotion - baseEmotion);
+
+        return {
+          ...f,
+          _score: Number(score.toFixed(2)), // 내부 정렬용 점수
+        };
+      })
+      .sort((a, b) => {
+        // 1️⃣ 점수 우선
+        if (b._score !== a._score) {
+          return b._score - a._score;
+        }
+
+        // 2️⃣ 점수 같으면 STORY 먼저
+        const aTypePriority = (a.type ?? a.TYPE) === "STORY" ? 0 : 1;
+        const bTypePriority = (b.type ?? b.TYPE) === "STORY" ? 0 : 1;
+
+        return aTypePriority - bTypePriority;
+      });
+
+    // 🔥 콘솔 디버깅
+    console.log("==== 피드 점수 계산 & 정렬 ====");
+    sorted.forEach((f) => {
       console.log(
-        `ID: ${f.id ?? f.ID}, Type: ${f.type ?? f.TYPE}, Emotion: ${f.emotion ?? f.EMOTION}, Score: ${f.score}`
+        `ID: ${f.id ?? f.ID}, Type: ${f.type ?? f.TYPE}, Emotion: ${f.emotion ?? f.EMOTION
+        }, Score: ${f._score}`
       );
     });
-    console.log("=======================");
+    console.log("==============================");
+
+    setSortedFeed(sorted);
   }, [feed, baseEmotion]);
 
   /* =========================
@@ -80,21 +106,23 @@ export default function FeedList() {
   return (
     <>
       <div className="feed-wrapper">
-        {/* ✅ 기준 감정 표시 (맨 위) */}
-        {baseEmotion && (
+        {/* ✅ 기준 감정 표시 */}
+        {baseEmotion !== null && (
           <div className="feed-base-emotion">
             <span className="emoji">
-              {emotionEmojis[baseEmotion - 1]}
+              {emotionEmojis[Math.round(baseEmotion) - 1]}
             </span>
             <span className="text">
-              현재 추천 기준 감정
+              현재 추천 기준 감정 ({baseEmotion.toFixed(1)})
             </span>
           </div>
         )}
 
-        {feed.length === 0 && <div>표시할 피드가 없습니다.</div>}
+        {sortedFeed.length === 0 && (
+          <div>표시할 피드가 없습니다.</div>
+        )}
 
-        {feed.map((item, index) => (
+        {sortedFeed.map((item, index) => (
           <FeedItem
             key={`${item.type ?? item.TYPE}-${item.id ?? item.ID}-${index}`}
             item={{
