@@ -17,7 +17,6 @@ type FeedItemProps = {
     isLiked?: boolean;
   };
 
-  // 댓글 모달 열기
   onOpenDetail?: (postId: number) => void;
 };
 
@@ -30,15 +29,12 @@ export default function FeedItem({ item, onOpenDetail }: FeedItemProps) {
   const [currentImg, setCurrentImg] = useState(0);
 
   /* =========================
-     좋아요 상태 (local state)
+     좋아요 상태
   ========================= */
-  const [isLiked, setIsLiked] = useState<boolean>(false);
-  const [likeCount, setLikeCount] = useState<number>(0);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
   const [likeLoading, setLikeLoading] = useState(false);
 
-  /* 🔥 props → state 동기화
-     (새로고침 / 피드 재조회 시 핵심)
-  */
   useEffect(() => {
     setIsLiked(Boolean(item.isLiked));
     setLikeCount(item.likeCount ?? 0);
@@ -56,10 +52,10 @@ export default function FeedItem({ item, onOpenDetail }: FeedItemProps) {
   };
 
   /* =========================
-     좋아요 토글
+     ❤️ 좋아요 토글
   ========================= */
   const handleToggleLike = async () => {
-    if (likeLoading || item.type !== "POST") return;
+    if (likeLoading) return;
 
     const prevLiked = isLiked;
     const prevCount = likeCount;
@@ -67,16 +63,23 @@ export default function FeedItem({ item, onOpenDetail }: FeedItemProps) {
     const nextLiked = !prevLiked;
     const nextCount = Math.max(0, prevCount + (nextLiked ? 1 : -1));
 
-    // optimistic UI
     setIsLiked(nextLiked);
     setLikeCount(nextCount);
 
     try {
       setLikeLoading(true);
 
-      const res = await api.post(`/api/posts/${item.id}/like`);
+      const url =
+        item.type === "POST"
+          ? `/api/posts/${item.id}/like`
+          : `/api/stories/${item.id}/like`;
 
-      setIsLiked(Boolean(res.data?.isLiked));
+      const res = await api.post(url);
+
+      const serverLiked =
+        res.data?.liked ?? res.data?.isLiked ?? nextLiked;
+
+      setIsLiked(Boolean(serverLiked));
       setLikeCount(Number(res.data?.likeCount ?? nextCount));
     } catch (e) {
       console.error("좋아요 실패:", e);
@@ -129,16 +132,22 @@ export default function FeedItem({ item, onOpenDetail }: FeedItemProps) {
         </div>
       )}
 
-      {/* ===== 액션 영역 (POST만) ===== */}
+      {/* ===== 액션 (POST만) ===== */}
       {item.type === "POST" && (
         <div className="feed-actions">
-          <button
-            className={`feed-like-btn ${isLiked ? "liked" : ""}`}
-            onClick={handleToggleLike}
-            disabled={likeLoading}
-          >
-            {isLiked ? "♥" : "♡"}
-          </button>
+          <div className="feed-like-wrapper">
+            <button
+              className={`feed-like-btn ${isLiked ? "liked" : ""}`}
+              onClick={handleToggleLike}
+              disabled={likeLoading}
+            >
+              {isLiked ? "♥" : "♡"}
+            </button>
+
+            <span className="feed-like-text">
+              {likeCount > 0 ? likeCount : "가장 먼저 좋아요를 눌러보세요"}
+            </span>
+          </div>
 
           <button
             className="feed-comment-btn"
@@ -149,22 +158,27 @@ export default function FeedItem({ item, onOpenDetail }: FeedItemProps) {
         </div>
       )}
 
-      {/* ===== 좋아요 수 ===== */}
-      {item.type === "POST" && (
-        <div className="feed-like-count">
-          {likeCount > 0
-            ? `좋아요 ${likeCount}개`
-            : "가장 먼저 좋아요를 눌러보세요"}
-        </div>
-      )}
-
       {/* ===== 글 내용 ===== */}
-      {item.type === "POST" ? (
-        <div className="feed-caption">
-          <b>{item.authorNickname}</b> {item.content}
+      <div className="feed-caption">
+        {" "}
+        &nbsp;{" "}<b>{item.authorNickname}</b> {item.content}
+      </div>
+
+      {/* ===== STORY 좋아요 (내용 아래) ===== */}
+      {item.type === "STORY" && (
+        <div className="feed-like-wrapper" style={{ marginTop: 6 }}>
+          <button
+            className={`feed-like-btn ${isLiked ? "liked" : ""}`}
+            onClick={handleToggleLike}
+            disabled={likeLoading}
+          >
+            {isLiked ? "♥" : "♡"}
+          </button>
+
+          <span className="feed-like-text">
+            {likeCount > 0 ? likeCount : "가장 먼저 좋아요를 눌러보세요"}
+          </span>
         </div>
-      ) : (
-        <div className="feed-caption">{item.content}</div>
       )}
     </div>
   );

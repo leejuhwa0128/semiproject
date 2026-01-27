@@ -3,16 +3,29 @@ import { useRef } from "react";
 import FeedList from "../components/FEED/FeedList";
 import "./MainPage.css";
 
+const emotionEmojis = [
+  "😞","😔","😐","😌","🙂",
+  "😊","😄","😆","🤩","🥰"
+];
+
+const ITEM_WIDTH = 96;   // 링 포함 1개 너비
+const VISIBLE_COUNT = 5;
+
 const MainPage = () => {
   const navigate = useNavigate();
   const barRef = useRef<HTMLDivElement | null>(null);
 
-  const scrollLeft = () => {
-    barRef.current?.scrollBy({ left: -220, behavior: "smooth" });
-  };
+  // ⬅️➡️ 마우스 휠로 5개씩 좌우 이동
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    e.preventDefault();
 
-  const scrollRight = () => {
-    barRef.current?.scrollBy({ left: 220, behavior: "smooth" });
+    barRef.current?.scrollBy({
+      left:
+        e.deltaY > 0
+          ? ITEM_WIDTH * VISIBLE_COUNT
+          : -ITEM_WIDTH * VISIBLE_COUNT,
+      behavior: "smooth",
+    });
   };
 
   const goStoryCreate = (emotion: number) => {
@@ -21,23 +34,28 @@ const MainPage = () => {
 
   return (
     <div className="main-page">
-      {/* 🔥 감정 스토리 바 */}
+      {/* 🔥 감정 스토리 (인스타 스타일) */}
       <div className="emotion-story-wrapper">
-        <button className="story-nav left" onClick={scrollLeft}>‹</button>
-
-        <div className="emotion-story-bar" ref={barRef}>
-          {[1,2,3,4,5,6,7,8,9,10].map((n) => (
+        <div
+          className="emotion-story-bar"
+          ref={barRef}
+          onWheel={handleWheel}
+        >
+          {emotionEmojis.map((emoji, idx) => (
             <button
-              key={n}
+              key={idx}
               className="emotion-story-item"
-              onClick={() => goStoryCreate(n)}
+              onClick={() => goStoryCreate(idx + 1)}
             >
-              <div className="emotion-circle">{n}</div>
+              {/* ✅ 인스타 스토리 링 */}
+              <div className="emotion-ring">
+                <div className="emotion-circle">
+                  {emoji}
+                </div>
+              </div>
             </button>
           ))}
         </div>
-
-        <button className="story-nav right" onClick={scrollRight}>›</button>
       </div>
 
       {/* 📰 추천 피드 */}

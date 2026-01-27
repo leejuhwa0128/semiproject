@@ -4,8 +4,14 @@ import FeedItem from "./FeedItem";
 import PostDetailModal from "../../../components/PostDetailModal";
 import "./Feed.css";
 
+const emotionEmojis = [
+  "😞","😔","😐","😌","🙂",
+  "😊","😄","😆","🤩","🥰"
+];
+
 export default function FeedList() {
   const [feed, setFeed] = useState<any[]>([]);
+  const [baseEmotion, setBaseEmotion] = useState<number | null>(null);
 
   // ✅ 댓글 모달용 상태
   const [openedPostId, setOpenedPostId] = useState<number | null>(null);
@@ -16,6 +22,12 @@ export default function FeedList() {
   useEffect(() => {
     fetchRecommendedPosts()
       .then((data) => {
+        setBaseEmotion(
+          typeof data.baseEmotion === "number"
+            ? data.baseEmotion
+            : null
+        );
+
         setFeed(Array.isArray(data.feed) ? data.feed : []);
       })
       .catch((err) => {
@@ -23,6 +35,29 @@ export default function FeedList() {
         setFeed([]);
       });
   }, []);
+
+  /* =========================
+     점수 계산 및 콘솔 출력
+     (baseEmotion 기준)
+  ========================= */
+  useEffect(() => {
+    if (!feed || baseEmotion === null) return;
+
+    // score 계산: 단순 절댓값 차이 기준
+    const feedsWithScore = feed.map(f => {
+      const score = 10 - Math.abs((f.emotion ?? 0) - baseEmotion);
+      return { ...f, score };
+    }).sort((a, b) => b.score - a.score); // score 높은 순
+
+    // 콘솔 출력
+    console.log("==== 피드 점수 계산 ====");
+    feedsWithScore.forEach(f => {
+      console.log(
+        `ID: ${f.id ?? f.ID}, Type: ${f.type ?? f.TYPE}, Emotion: ${f.emotion ?? f.EMOTION}, Score: ${f.score}`
+      );
+    });
+    console.log("=======================");
+  }, [feed, baseEmotion]);
 
   /* =========================
      댓글 모달 제어
@@ -36,21 +71,33 @@ export default function FeedList() {
   };
 
   const handleDeletedPost = (postId: number) => {
-    // ✅ 모달에서 게시글 삭제 시 피드에서도 제거
-    setFeed((prev) => prev.filter((p) => p.id !== postId && p.ID !== postId));
+    setFeed((prev) =>
+      prev.filter((p) => p.id !== postId && p.ID !== postId)
+    );
     setOpenedPostId(null);
   };
 
   return (
     <>
       <div className="feed-wrapper">
+        {/* ✅ 기준 감정 표시 (맨 위) */}
+        {baseEmotion && (
+          <div className="feed-base-emotion">
+            <span className="emoji">
+              {emotionEmojis[baseEmotion - 1]}
+            </span>
+            <span className="text">
+              현재 추천 기준 감정
+            </span>
+          </div>
+        )}
+
         {feed.length === 0 && <div>표시할 피드가 없습니다.</div>}
 
         {feed.map((item, index) => (
           <FeedItem
             key={`${item.type ?? item.TYPE}-${item.id ?? item.ID}-${index}`}
             item={{
-              // ✅ 서버에서 대문자로 오든 소문자로 오든 정규화
               type: item.type ?? item.TYPE,
               id: item.id ?? item.ID,
               content: item.content ?? item.CONTENT,
@@ -66,7 +113,7 @@ export default function FeedList() {
               likeCount: item.likeCount ?? item.LIKE_COUNT ?? 0,
               isLiked: item.isLiked ?? item.IS_LIKED ?? false,
             }}
-            onOpenDetail={openDetail} // ✅ 댓글 클릭 → 모달 열기
+            onOpenDetail={openDetail}
           />
         ))}
       </div>

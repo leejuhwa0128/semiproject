@@ -92,28 +92,7 @@
 .feed-nav.prev { left: 8px; }
 .feed-nav.next { right: 8px; }
 
-/* 도트 */
-.feed-dots {
-  position: absolute;
-  bottom: 8px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-}
-
-.feed-dots .dot {
-  width: 6px;
-  height: 6px;
-  background: rgba(255,255,255,0.6);
-  border-radius: 50%;
-}
-
-.feed-dots .dot.active {
-  background: #fff;
-}
-
-/* ===== 액션 바 (핵심 수정) ===== */
+/* ===== 액션 바 ===== */
 .feed-actions {
   display: flex;
   align-items: center;
@@ -121,17 +100,23 @@
   margin-top: 8px;
 }
 
-/* ❤️ 💬 아이콘 버튼 */
-.feed-actions button {
+/* ❤️ 좋아요 묶음 */
+.feed-like-wrapper {
+  display: inline-flex;      /* ⭐ 핵심 */
+  align-items: center;
+  gap: 6px;
+}
+
+/* ❤️ 좋아요 버튼 */
+.feed-like-btn {
   background: none;
   border: none;
   padding: 0;
-  margin: 0;
   cursor: pointer;
 
-  font-size: 22px;      /* 고정 */
-  line-height: 1;       /* 높이 고정 */
-  width: 24px;          /* 클릭 영역 고정 */
+  font-size: 22px;
+  line-height: 1;
+  width: 24px;
   height: 24px;
 
   display: flex;
@@ -141,25 +126,63 @@
   color: #262626;
 }
 
-.feed-actions button:hover {
+.feed-like-btn:hover {
   opacity: 0.6;
 }
 
-/* 좋아요 눌림 */
-.feed-actions .liked {
+.feed-like-btn.liked {
   color: #ed4956;
-  transform: scale(1);  /* 크기 차이 제거 */
 }
 
-/* ===== 텍스트 ===== */
-.feed-like-count {
-  font-weight: 600;
-  margin-top: 6px;
+/* ❤️ 좋아요 숫자 / 문구 */
+.feed-like-text {
   font-size: 14px;
+  color: #262626;
+  line-height: 1;
+  white-space: nowrap;       /* 줄바꿈 방지 */
 }
 
+/* 💬 댓글 버튼 */
+.feed-comment-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+
+  font-size: 22px;
+  width: 24px;
+  height: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #262626;
+}
+
+.feed-comment-btn:hover {
+  opacity: 0.6;
+}
+
+/* ===== 글 내용 ===== */
 .feed-caption {
   margin-top: 6px;
   font-size: 14px;
   line-height: 1.4;
+}
+
+.feed-base-emotion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border-radius: 14px;
+  background: #f6f7f9;
+  font-size: 14px;
+  color: #333;
+}
+
+.feed-base-emotion .emoji {
+  font-size: 22px;
 }

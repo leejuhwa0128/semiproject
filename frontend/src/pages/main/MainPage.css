@@ -1,9 +1,8 @@
 /* =========================
-   MainPage.css (전체)
-   - 원(90px) 6개 안짤리게 보이게
-   - 원 시작을 더 왼쪽으로
-   - 좌/우 버튼 표시
-   - 테스트/텍스트 제거
+   MainPage.css (최종)
+   - 인스타 스토리 링
+   - 5개 고정 표시
+   - 좌우 스크롤 (휠)
    ========================= */
 
 .main-page {
@@ -14,127 +13,102 @@
 
 /* ✅ 감정 스토리 전체 래퍼 */
 .emotion-story-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
+  width: fit-content;
+  margin: 0 auto;
 
-  /* 버튼 공간은 최소만 확보 */
-  padding: 0 28px;
+  padding: 4px;
+  border-radius: 12px;
 
-  /* 큰 원(90px) 대비 */
-  min-height: 120px;
+  background: transparent;
 }
 
-/* ✅ 감정 리스트: 원 6개 딱 보이게(안짤리게) */
+/* ✅ 5개만 보이도록 고정 */
 .emotion-story-bar {
   display: flex;
-  gap: 14px;
-  padding: 14px 0;
+  gap: 16px;
 
-  /* 90*6 + 14*5 = 610 */
-  width: 610px;
+  width: calc(100px * 5);
+  padding: 8px 0;
 
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+
   scroll-behavior: smooth;
-
-  /* ✅ 원 시작을 더 왼쪽으로 */
-  margin-left: -20px;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* ✅ 감정 아이템(버튼) */
+/* 스크롤바 숨김 */
+.emotion-story-bar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ✅ 감정 아이템 버튼 */
 .emotion-story-item {
+  flex: 0 0 auto;
   border: none;
   background: transparent;
   padding: 0;
   cursor: pointer;
-
-  /* 찌그러짐 방지 */
-  flex: 0 0 auto;
-
-  /* 클릭 시 기본 아웃라인 제거 */
-  outline: none;
-}
-
-/* ✅ 박스 모델 안정화 */
-.emotion-story-item,
-.emotion-story-item * {
-  box-sizing: border-box;
-}
-
-/* ✅ 인스타 느낌 "정원" 강제 + 90px */
-.emotion-circle {
-  width: 90px;
-  height: 90px;
-  aspect-ratio: 1 / 1;
-
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-
-  background: linear-gradient(45deg, #2563eb, #a855f7);
-
-  color: #fff;
-  font-size: 32px;
-  font-weight: 700;
-  user-select: none;
-}
-
-/* ✅ hover 효과 */
-.emotion-story-item:hover .emotion-circle {
-  transform: scale(1.05);
-  transition: transform 0.15s ease;
-}
-
-/* ✅ 좌우 이동 버튼 (무조건 보이게 강제) */
-.story-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: none;
-
-  background: rgba(0, 0, 0, 0.75);
-  color: #fff;
-  font-size: 22px;
-  line-height: 1;
-
-  cursor: pointer;
-
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-
-  opacity: 1 !important;
-  visibility: visible !important;
-  pointer-events: auto !important;
-  z-index: 99999 !important;
-}
-
-.story-nav.left {
-  left: 4px !important;
-}
-
-.story-nav.right {
-  right: 4px !important;
 }
 
 /* =========================
-   ❌ 텍스트/테스트 강제 제거
+   🔥 인스타 스토리 링
    ========================= */
 
-/* 감정 텍스트가 pseudo로 붙는 경우 제거 */
+.emotion-ring {
+  width: 80px;
+  height: 80px;
+  padding: 3px; /* 링 두께 */
+
+  border-radius: 50%;
+  background: linear-gradient(
+    45deg,
+    #f58529,
+    #dd2a7b,
+    #8134af,
+    #515bd4
+  );
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ✅ 안쪽 이모지 */
+.emotion-circle {
+  width: 100%;
+  height: 100%;
+
+  border-radius: 50%;
+  background: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 42px;
+  transition: transform 0.15s ease;
+}
+
+/* hover 효과 */
+.emotion-story-item:hover .emotion-circle {
+  transform: scale(1.08);
+}
+
+/* =========================
+   ❌ 불필요 요소 제거
+   ========================= */
+
 .emotion-story-item::before,
 .emotion-story-item::after,
+.emotion-ring::before,
+.emotion-ring::after,
 .emotion-circle::before,
 .emotion-circle::after {
   content: none !important;
   display: none !important;
 }
 
-/* 혹시 DOM에 들어온 텍스트 태그도 제거 */
 .emotion-story-item span,
 .emotion-story-item p,
 .emotion-story-item small,
@@ -142,7 +116,6 @@
   display: none !important;
 }
 
-/* (있을 경우) 테스트 박스 클래스 숨김 */
 .mainpage-test,
 .mainpage-debug {
   display: none !important;

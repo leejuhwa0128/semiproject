@@ -26,6 +26,7 @@ import postLikeRouter from "./routes/posts/posts.like";
 //스토리
 import storiesRouter from "./routes/stories/stories.routes";
 import storyMediaRouter from "./routes/stories/media.routes";
+import storyLikeRouter from "./routes/stories/StoriesLikes.routes";
 
 // api follows
 import followRouter from "./routes/api/follows.routes";
@@ -98,7 +99,7 @@ app.use("/api/media", mediaRouter);
 // 스토리
 app.use("/api/stories/media", storyMediaRouter);
 app.use("/api/stories", storiesRouter);
-
+app.use("/api/stories", storyLikeRouter);
 
 // 서버 시작 (Oracle 풀 준비 후)
 (async () => {

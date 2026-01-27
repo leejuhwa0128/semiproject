@@ -76,7 +76,7 @@ FROM (
   LEFT JOIN story_media sm ON sm.story_id = s.story_id
   GROUP BY s.story_id, s.content, s.emotion_score, u.nickname, u.profile_image_url
 )
-ORDER BY ABS(EMOTION - :baseEmotion)
+ ORDER BY ABS(EMOTION - :baseEmotion)
 `;
 
     const result = await conn.execute<any>(
